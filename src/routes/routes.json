@@ -1,0 +1,28 @@
+{
+    "menuItems": [
+        {
+            "label": "Home",
+            "path": "/"
+        },
+        {
+            "label": "Asset Alocation",
+            "path": "/asset-alocation"
+        },
+        {
+            "label": "Asset Detail",
+            "path": "/asset-detail"
+        },
+        {
+            "label": "Assets Spreadsheet",
+            "path": "/assets-spreadsheet"
+        },
+        {
+            "label": "Wealth Evolution",
+            "path": "/wealth-evolution"
+        },
+        {
+            "label": "About",
+            "path": "/about"
+        }
+    ]
+}
