@@ -7,7 +7,7 @@ import { StyledCell } from '../StyledCell';
 export const TableRow = ({
     item,
     rowIndex,
-    setIsEditing, // Add setIsEditing prop to handle state in the parent component
+    setIsEditing,
     editingField,
     handleEditChange,
     setEditingField,
@@ -15,7 +15,7 @@ export const TableRow = ({
 }: {
     item: (typeof mockData)[0];
     rowIndex: number;
-    setIsEditing: React.Dispatch<React.SetStateAction<boolean>>; // Add this prop to control isEditing state
+    setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
     editingField: { row: number; field: string } | null;
     handleEditChange: (index: number, field: string, value: string) => void;
     setEditingField: React.Dispatch<React.SetStateAction<{ row: number; field: string } | null>>;
@@ -23,18 +23,19 @@ export const TableRow = ({
 }) => {
     const profit = calculateProfit(item);
 
+    const wealthPercentage = (item.asset_qty * item.current_price) / totalWealth;
+
     const handleEdit = (field: string) => {
         setEditingField({ row: rowIndex, field });
-        setIsEditing(true); // Set isEditing to true when editing starts
+        setIsEditing(true);
     };
 
     return (
-        <div className="grid grid-cols-12 gap-4 items-center bg-white rounded-md shadow-md p-4 mb-2">
+        <div className="grid grid-cols-12 gap-4 items-center bg-white rounded-md shadow-md p-4 pr-8 mb-2">
             <StyledCell>{item.asset_class}</StyledCell>
             <StyledCell>{item.asset_type}</StyledCell>
             <StyledCell>{item.asset_ticker}</StyledCell>
 
-            {/* Editable Quantity Field */}
             <StyledCell>
                 <EditableCell
                     isEditing={editingField?.row === rowIndex && editingField?.field === 'asset_qty'}
@@ -46,7 +47,6 @@ export const TableRow = ({
                 />
             </StyledCell>
 
-            {/* Editable Average Price Field */}
             <StyledCell>
                 <EditableCell
                     isEditing={editingField?.row === rowIndex && editingField?.field === 'avg_price'}
@@ -58,15 +58,33 @@ export const TableRow = ({
                 />
             </StyledCell>
 
-            <StyledCell>{item.current_price}</StyledCell>
-            <StyledCell>{item.currency}</StyledCell>
-            <StyledCell>{(item.asset_qty * item.avg_price).toFixed(2)}</StyledCell>
-            <StyledCell>{(item.asset_qty * item.current_price).toFixed(2)}</StyledCell>
             <StyledCell>
-                {(item.asset_qty * item.current_price - item.asset_qty * item.avg_price).toFixed(2)}
+                {item.current_price.toLocaleString('pt-br', {
+                    style: 'currency',
+                    currency: item.currency
+                })}
             </StyledCell>
-            <ProfitIndicator profit={profit} />
-            <StyledCell>{(((item.asset_qty * item.current_price) / totalWealth) * 100).toFixed(2)}</StyledCell>
+            <StyledCell>{item.currency}</StyledCell>
+            <StyledCell>
+                {(item.asset_qty * item.avg_price).toLocaleString('pt-br', {
+                    style: 'currency',
+                    currency: item.currency
+                })}
+            </StyledCell>
+            <StyledCell>
+                {(item.asset_qty * item.current_price).toLocaleString('pt-br', {
+                    style: 'currency',
+                    currency: item.currency
+                })}
+            </StyledCell>
+            <ProfitIndicator profit={profit.value} />
+            <ProfitIndicator profit={profit.percentage} format="percent" />
+            <StyledCell>
+                {wealthPercentage.toLocaleString('pt-br', {
+                    style: 'percent',
+                    maximumFractionDigits: 2
+                })}
+            </StyledCell>
         </div>
     );
 };

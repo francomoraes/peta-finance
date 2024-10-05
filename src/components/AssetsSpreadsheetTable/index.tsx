@@ -1,24 +1,26 @@
 import ActionButton from '@/components/ActionButton';
-import { AddRowForm } from '@/components/Table/components/AddRowForm';
-import { TableHeader } from '@/components/Table/components/TableHeader';
-import { TableRow } from '@/components/Table/components/TableRow';
 import ToggleButton from '@/components/ToggleButton';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import DeleteButton from '../DeleteButton';
+import { TableHeader } from './components/TableHeader';
+import { TableRow } from './components/TableRow';
+import { AddRowForm } from './components/AddRowForm';
 
 const AssetsSpreadsheetTable = ({
-    mockData,
+    assetsData,
+    totalWealth,
     possibleAssetClasses,
     possibleAssetTypes,
     headerTitles
 }: {
-    mockData: any[];
+    assetsData: any[];
+    totalWealth: number;
     possibleAssetClasses: string[];
     possibleAssetTypes: { [key: string]: string[] };
     headerTitles: string[];
 }) => {
-    const [data, setData] = useState(mockData);
-    const [editData, setEditData] = useState(mockData);
+    const [data, setData] = useState<any[]>([]);
+    const [editData, setEditData] = useState<any[]>([]);
     const [isEditing, setIsEditing] = useState(false);
     const [editingField, setEditingField] = useState<{ row: number; field: string } | null>(null);
     const [showNewRowInputs, setShowNewRowInputs] = useState(false);
@@ -34,10 +36,12 @@ const AssetsSpreadsheetTable = ({
         currency: ''
     });
 
-    // Update total wealth calculation
-    const totalWealth = mockData.reduce((acc, item) => {
-        return acc + item.asset_qty * item.current_price;
-    }, 0);
+    useEffect(() => {
+        if (assetsData) {
+            setData(assetsData);
+            setEditData(assetsData);
+        }
+    }, [assetsData]);
 
     const handleEditChange = (index: number, field: string, value: string) => {
         const updatedData = [...editData];
@@ -48,10 +52,36 @@ const AssetsSpreadsheetTable = ({
         setEditData(updatedData);
     };
 
+    const updateAssets = async (updatedAssets: any[]) => {
+        try {
+            const baseUrl = import.meta.env.VITE_APP_API;
+            const token = import.meta.env.VITE_USER_TOKEN;
+
+            const response = await fetch(`${baseUrl}/assets`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify(updatedAssets)
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update assets');
+            }
+
+            const result = await response.json();
+            console.log('Assets updated successfully', result);
+        } catch (error: any) {
+            console.error('Error updating assets', error);
+        }
+    };
+
     const handleSave = () => {
         setData(editData);
         setIsEditing(false);
         setEditingField(null);
+        updateAssets(editData);
     };
 
     const handleCancel = () => {
@@ -59,6 +89,35 @@ const AssetsSpreadsheetTable = ({
         setIsEditing(false);
         setEditingField(null);
     };
+
+    const createAsset = async (newAsset: any) => {
+        console.log('newAsset', newAsset);
+        try {
+            const baseUrl = import.meta.env.VITE_APP_API;
+            const token = import.meta.env.VITE_USER_TOKEN;
+
+            const response = await fetch(`${baseUrl}/assets`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify(newAsset)
+            });
+
+            console.log('response', response);
+
+            if (!response.ok) {
+                throw new Error('Failed to create asset');
+            }
+
+            const result = await response.json();
+            console.log('Asset created successfully', result);
+        } catch (error: any) {
+            console.error('Error creating asset', error);
+        }
+    };
+
     const addRow = () => {
         setEditData([...editData, formState]);
         setShowNewRowInputs(false);
@@ -71,6 +130,7 @@ const AssetsSpreadsheetTable = ({
             current_price: 0,
             currency: ''
         });
+        createAsset(formState);
     };
 
     const handleDeleteRow = (index: number) => {

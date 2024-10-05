@@ -17,7 +17,7 @@ export const EditableCell = ({
 }) => {
     return isEditing ? (
         <input
-            type="number"
+            // type="number"
             value={value}
             onChange={(e) => onSave(rowIndex, field, e.target.value)}
             onBlur={onEdit}

@@ -8,7 +8,7 @@
 
 /* Create a custom utility class in your styles.css or tailwind.config.js */
 @layer components {
-    .table-cell {
-        @apply text-sm font-bold w-full text-center p-1 text-gray-700 rounded-md;
+    .tableCell {
+        @apply text-sm font-bold w-full text-center p-1 text-gray-700 rounded-md flex items-center justify-center;
     }
 }

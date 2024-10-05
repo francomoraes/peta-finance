@@ -77,6 +77,12 @@ export const AddRowForm = ({
                     onChange={(e) => setFormState({ ...formState, currency: e.target.value })}
                     placeholder="Currency"
                 />
+                <input
+                    type="text"
+                    value={formState.custody}
+                    onChange={(e) => setFormState({ ...formState, custody: e.target.value })}
+                    placeholder="Custody"
+                />
                 <button
                     className="bg-green-500 text-white px-4 py-2 rounded shadow-md hover:bg-green-600"
                     onClick={(e) => {

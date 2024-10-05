@@ -28,15 +28,7 @@ export const mockData = [
     }
 ];
 
-export const headerTitles = [
-    'Asset Class',
-    'Asset Type',
-    'Asset Ticker',
-    'Asset Quantity',
-    'Average Price',
-    'Current Price',
-    'Currency'
-];
+export const headerTitles = ['Class', 'Type', 'Ticker', 'QTD', 'Preço Médio', 'Preço Atual', 'Moeda'];
 
 export const possibleAssetClasses = ['Renda fixa', 'Mercado Imobiliário', 'Stocks'];
 

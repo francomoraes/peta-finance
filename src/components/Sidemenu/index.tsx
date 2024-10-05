@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom';
 import { menuItems } from '@/routes/routes.json';
+import { motion } from 'framer-motion';
 
 const SideMenu = () => {
     if (!menuItems) return null;
 
     return (
-        <aside className="w-64 bg-gray-200 p-4">
+        <motion.aside className="w-[200px] bg-gray-200 p-4" initial={{ x: -200 }} animate={{ x: 0 }} exit={{ x: -200 }}>
             <nav>
                 <ul>
                     {menuItems.map((item, index) => (
@@ -15,7 +16,7 @@ const SideMenu = () => {
                     ))}
                 </ul>
             </nav>
-        </aside>
+        </motion.aside>
     );
 };
 
