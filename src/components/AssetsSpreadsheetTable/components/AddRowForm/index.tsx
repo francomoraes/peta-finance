@@ -1,3 +1,5 @@
+import ClassDropdown from './components/ClassDropdown/Classdropdown';
+
 export const AddRowForm = ({
     showNewRowInputs,
     formState,
@@ -7,46 +9,39 @@ export const AddRowForm = ({
     setSelectedAssetClass,
     addRow
 }: any) => {
+    console.log('possibleAssetClasses', possibleAssetClasses);
+    console.log('possibleAssetTypes', possibleAssetTypes[possibleAssetClasses[0]]);
+
     return (
         showNewRowInputs && (
-            <form className="grid grid-cols-12 gap-4 items-center bg-white rounded-md shadow-md p-4 mb-2">
-                <select
-                    id="asset-input"
-                    value={formState.asset_class}
-                    onChange={(e) => {
-                        if (e.target.value === 'create-new') {
+            <form className="flex gap-4 items-center bg-white rounded-md shadow-md p-4 mb-2 [&>input]:max-w-[100px]">
+                <ClassDropdown
+                    label="Asset Class"
+                    options={possibleAssetClasses}
+                    selected={formState.asset_class}
+                    onSelect={(value: string) => {
+                        if (value === 'create-new') {
                             window.alert('Creating new asset class is not supported yet');
                             return;
                         }
-                        setSelectedAssetClass(e.target.value);
-                        setFormState({ ...formState, asset_class: e.target.value });
+                        setSelectedAssetClass(value);
+                        setFormState({ ...formState, asset_class: value });
                     }}
-                >
-                    {possibleAssetClasses.map((item: string, index: number) => (
-                        <option key={index} value={item}>
-                            {item}
-                        </option>
-                    ))}
-                    <option value="create-new">Criar nova classe</option>
-                </select>
-                <select
-                    id="type-input"
-                    value={formState.asset_type}
-                    onChange={(e) => {
-                        if (e.target.value === 'create-new') {
+                />
+                <ClassDropdown
+                    label="Asset Type"
+                    options={
+                        possibleAssetTypes?.[formState.asset_class] || possibleAssetTypes?.[possibleAssetClasses[0]]
+                    }
+                    selected={formState.asset_type}
+                    onSelect={(value: string) => {
+                        if (value === 'create-new') {
                             window.alert('Creating new asset type is not supported yet');
                             return;
                         }
-                        setFormState({ ...formState, asset_type: e.target.value });
+                        setFormState({ ...formState, asset_type: value });
                     }}
-                >
-                    {possibleAssetTypes?.[formState.asset_class]?.map((item: string, index: number) => (
-                        <option key={index} value={item}>
-                            {item}
-                        </option>
-                    ))}
-                    <option value="create-new">Criar novo tipo</option>
-                </select>
+                />
                 <input
                     type="text"
                     value={formState.asset_ticker}

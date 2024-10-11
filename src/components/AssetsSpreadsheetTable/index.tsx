@@ -91,7 +91,6 @@ const AssetsSpreadsheetTable = ({
     };
 
     const createAsset = async (newAsset: any) => {
-        console.log('newAsset', newAsset);
         try {
             const baseUrl = import.meta.env.VITE_APP_API;
             const token = import.meta.env.VITE_USER_TOKEN;
@@ -105,22 +104,22 @@ const AssetsSpreadsheetTable = ({
                 body: JSON.stringify(newAsset)
             });
 
-            console.log('response', response);
-
             if (!response.ok) {
                 throw new Error('Failed to create asset');
             }
 
             const result = await response.json();
             console.log('Asset created successfully', result);
+
+            setEditData((prevData) => [...prevData, result]);
         } catch (error: any) {
             console.error('Error creating asset', error);
         }
     };
 
     const addRow = () => {
-        setEditData([...editData, formState]);
         setShowNewRowInputs(false);
+        createAsset(formState);
         setFormState({
             asset_class: 'Renda fixa',
             asset_type: '',
@@ -130,12 +129,36 @@ const AssetsSpreadsheetTable = ({
             current_price: 0,
             currency: ''
         });
-        createAsset(formState);
+    };
+
+    const deleteAsset = async (assetId: string) => {
+        try {
+            const baseUrl = import.meta.env.VITE_APP_API;
+            const token = import.meta.env.VITE_USER_TOKEN;
+
+            const response = await fetch(`${baseUrl}/assets/${assetId}`, {
+                method: 'DELETE',
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to delete asset');
+            }
+
+            const result = await response.json();
+            console.log('Asset deleted successfully', result);
+        } catch (error: any) {
+            console.error('Error deleting asset', error);
+        }
     };
 
     const handleDeleteRow = (index: number) => {
         window.confirm('Are you sure you want to delete this row?') &&
-            setEditData(editData.filter((_, i) => i !== index));
+            deleteAsset(editData[index].id).then(() => {
+                setEditData(editData.filter((_, i) => i !== index));
+            });
     };
 
     const handleSort = (field: string) => {

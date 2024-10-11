@@ -3,12 +3,18 @@ import useFetchAssets from './hooks/useFetchAssets';
 import { headerTitles } from '@/components/AssetsSpreadsheetTable/fakeAssetSpreadsheetData';
 import ErrorMessage from '@/components/ErrorMessage';
 import SpinnerLoader from '@/components/SpinnerLoader';
+import useFetchClasses from './hooks/useFetchClasses';
 
 const AssetsSpreadsheet = () => {
     const token = import.meta.env.VITE_USER_TOKEN;
 
-    const { assets, possibleClasses, possibleTypes, totalWealth, isLoading, error } = useFetchAssets({
+    const { assets, totalWealth, isLoading, error } = useFetchAssets({
         fetchUrl: `${import.meta.env.VITE_APP_API}/assets`,
+        token
+    });
+
+    const { classes, types } = useFetchClasses({
+        fetchUrl: `${import.meta.env.VITE_APP_API}/assetTypes`,
         token
     });
 
@@ -22,8 +28,8 @@ const AssetsSpreadsheet = () => {
             <AssetsSpreadsheetTable
                 assetsData={assets}
                 totalWealth={totalWealth}
-                possibleAssetClasses={possibleClasses}
-                possibleAssetTypes={possibleTypes}
+                possibleAssetClasses={classes}
+                possibleAssetTypes={types}
                 headerTitles={headerTitles}
             />
         </div>
