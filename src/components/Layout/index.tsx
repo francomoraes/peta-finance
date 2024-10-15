@@ -14,7 +14,7 @@ const Layout = ({ children }: LayoutProps) => {
     const [showMenu, setShowMenu] = useState(false);
 
     return (
-        <div className="flex flex-col min-h-screen">
+        <div id="layout" className="flex flex-col min-h-screen">
             <Header />
             <div className="flex flex-1 relative">
                 <button

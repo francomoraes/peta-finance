@@ -118,6 +118,7 @@ const AssetsSpreadsheetTable = ({
     };
 
     const addRow = () => {
+        console.log('formState', formState);
         setShowNewRowInputs(false);
         createAsset(formState);
         setFormState({

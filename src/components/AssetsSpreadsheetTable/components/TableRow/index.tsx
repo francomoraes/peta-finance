@@ -31,7 +31,7 @@ export const TableRow = ({
     };
 
     return (
-        <div className="grid grid-cols-12 gap-4 items-center bg-white rounded-md shadow-md p-4 pr-8 mb-2">
+        <div className="grid grid-cols-12 gap-4 items-center bg-white rounded-md shadow-md p-1 pr-8 mb-2">
             <StyledCell>{item.asset_class}</StyledCell>
             <StyledCell>{item.asset_type}</StyledCell>
             <StyledCell>{item.asset_ticker}</StyledCell>

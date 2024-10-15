@@ -20,7 +20,6 @@ const useFetchClasses = ({ fetchUrl, token }: { fetchUrl: string; token: string 
                 }
 
                 const data: any[] = await response.json();
-                console.log('data', data);
                 const tempClasses = new Set(data.map((item: any) => item.asset_class as string));
 
                 setClasses(Array.from(tempClasses));

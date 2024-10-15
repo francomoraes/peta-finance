@@ -1,4 +1,9 @@
-import ClassDropdown from './components/ClassDropdown/Classdropdown';
+import { useModal } from '@/hooks/useModal';
+import { Modal } from '@/components/Modal/Modal';
+import AddClassForm from '../ModalContent/AddClass';
+import FormInput from './components/FormInput/FormInput';
+import FormDropdown from './components/FormDropdown/FormDropdown';
+import SubmitButton from './components/SubmitButton/SubmitButton';
 
 export const AddRowForm = ({
     showNewRowInputs,
@@ -9,85 +14,115 @@ export const AddRowForm = ({
     setSelectedAssetClass,
     addRow
 }: any) => {
-    console.log('possibleAssetClasses', possibleAssetClasses);
-    console.log('possibleAssetTypes', possibleAssetTypes[possibleAssetClasses[0]]);
+    const { isOpen, openModal, closeModal } = useModal();
+
+    const createClassOrType = async (newClassOrType: any) => {
+        try {
+            const baseUrl = import.meta.env.VITE_APP_API;
+            const token = import.meta.env.VITE_USER_TOKEN;
+
+            const response = await fetch(`${baseUrl}/asset-types`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify(newClassOrType)
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to create asset class or type');
+            }
+
+            const result = await response.json();
+            console.log('Asset class or type created successfully', result);
+        } catch (error: any) {
+            console.error('Error creating asset class or type', error);
+        }
+    };
+
+    const onSubmitClass = (classTypeArray: any[]) => {
+        classTypeArray.forEach((classOrType) => {
+            createClassOrType(classOrType);
+        });
+        closeModal();
+    };
 
     return (
         showNewRowInputs && (
-            <form className="flex gap-4 items-center bg-white rounded-md shadow-md p-4 mb-2 [&>input]:max-w-[100px]">
-                <ClassDropdown
-                    label="Asset Class"
-                    options={possibleAssetClasses}
-                    selected={formState.asset_class}
-                    onSelect={(value: string) => {
-                        if (value === 'create-new') {
-                            window.alert('Creating new asset class is not supported yet');
-                            return;
+            <>
+                <form className="flex flex-wrap gap-4 items-end bg-white rounded-lg shadow-lg p-6 mb-4 border border-gray-200">
+                    <FormDropdown
+                        label="Asset Class"
+                        formState={formState}
+                        setFormState={setFormState}
+                        setSelectedAssetClass={setSelectedAssetClass}
+                        options={possibleAssetClasses}
+                        selected={formState.asset_class}
+                        openModal={openModal}
+                    />
+
+                    <FormDropdown
+                        label="Asset Type"
+                        formState={formState}
+                        setFormState={setFormState}
+                        options={
+                            possibleAssetTypes?.[formState.asset_class] || possibleAssetTypes?.[possibleAssetClasses[0]]
                         }
-                        setSelectedAssetClass(value);
-                        setFormState({ ...formState, asset_class: value });
-                    }}
-                />
-                <ClassDropdown
-                    label="Asset Type"
-                    options={
-                        possibleAssetTypes?.[formState.asset_class] || possibleAssetTypes?.[possibleAssetClasses[0]]
-                    }
-                    selected={formState.asset_type}
-                    onSelect={(value: string) => {
-                        if (value === 'create-new') {
-                            window.alert('Creating new asset type is not supported yet');
-                            return;
-                        }
-                        setFormState({ ...formState, asset_type: value });
-                    }}
-                />
-                <input
-                    type="text"
-                    value={formState.asset_ticker}
-                    onChange={(e) => setFormState({ ...formState, asset_ticker: e.target.value })}
-                    placeholder="Asset Ticker"
-                />
-                <input
-                    type="number"
-                    value={formState.asset_qty}
-                    onChange={(e) => setFormState({ ...formState, asset_qty: parseFloat(e.target.value) || 0 })}
-                    placeholder="Asset Quantity"
-                />
-                <input
-                    type="number"
-                    value={formState.avg_price}
-                    onChange={(e) => setFormState({ ...formState, avg_price: parseFloat(e.target.value) || 0 })}
-                    placeholder="Average Price"
-                />
-                <input
-                    type="number"
-                    value={formState.current_price}
-                    onChange={(e) => setFormState({ ...formState, current_price: parseFloat(e.target.value) || 0 })}
-                    placeholder="Current Price"
-                />
-                <input
-                    type="text"
-                    value={formState.currency}
-                    onChange={(e) => setFormState({ ...formState, currency: e.target.value })}
-                    placeholder="Currency"
-                />
-                <input
-                    type="text"
-                    value={formState.custody}
-                    onChange={(e) => setFormState({ ...formState, custody: e.target.value })}
-                    placeholder="Custody"
-                />
-                <button
-                    className="bg-green-500 text-white px-4 py-2 rounded shadow-md hover:bg-green-600"
-                    onClick={(e) => {
-                        e.preventDefault();
-                        addRow();
-                    }}
-                >
-                    Add Row
-                </button>
-            </form>
+                        selected={formState.asset_type}
+                        openModal={openModal}
+                    />
+
+                    <FormInput
+                        label="Asset Ticker"
+                        value={formState.asset_ticker}
+                        formState={formState}
+                        setFormState={setFormState}
+                        fieldKey="asset_ticker"
+                    />
+                    <FormInput
+                        label="Asset Quantity"
+                        value={formState.asset_qty}
+                        formState={formState}
+                        setFormState={setFormState}
+                        fieldKey="asset_qty"
+                    />
+                    <FormInput
+                        label="Average Price"
+                        value={formState.avg_price}
+                        formState={formState}
+                        setFormState={setFormState}
+                        fieldKey="avg_price"
+                    />
+                    <FormInput
+                        label="Currency"
+                        value={formState.currency}
+                        formState={formState}
+                        setFormState={setFormState}
+                        fieldKey="currency"
+                    />
+                    <FormInput
+                        label="Custody"
+                        value={formState.custody}
+                        formState={formState}
+                        setFormState={setFormState}
+                        fieldKey="custody"
+                    />
+
+                    <SubmitButton addRow={addRow} />
+                </form>
+                {isOpen && (
+                    <Modal closeModal={closeModal}>
+                        <AddClassForm
+                            onCancel={closeModal}
+                            onSubmit={onSubmitClass}
+                            closeModal={closeModal}
+                            existingClasses={possibleAssetClasses}
+                            possibleAssetTypes={possibleAssetTypes}
+                        />
+                    </Modal>
+                )}
+            </>
         )
     );
 };

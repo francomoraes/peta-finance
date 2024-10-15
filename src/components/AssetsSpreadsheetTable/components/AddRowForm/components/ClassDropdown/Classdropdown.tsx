@@ -9,7 +9,7 @@ type DropdownProps = {
     width?: string;
 };
 
-const ClassDropdown = ({ label, options, selected, onSelect, width = 'w-48' }: DropdownProps) => {
+const ClassDropdown = ({ label, options, selected, onSelect, width = 'w-[140px]' }: DropdownProps) => {
     const [isOpen, setIsOpen] = useState(false);
 
     const handleSelect = (value: string) => {
@@ -18,7 +18,7 @@ const ClassDropdown = ({ label, options, selected, onSelect, width = 'w-48' }: D
     };
 
     return (
-        <div className={`relative inline-block text-left  ${width}`}>
+        <div className={`relative inline-block text-left ${width}`}>
             <button
                 type="button"
                 className="inline-flex justify-between max-w-[180px] w-full px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none"
@@ -26,9 +26,9 @@ const ClassDropdown = ({ label, options, selected, onSelect, width = 'w-48' }: D
             >
                 <span className="truncate">{selected || label}</span>
                 {isOpen ? (
-                    <FaChevronUp className="w-5 h-5 ml-2 text-gray-500 rotate-180 transition-all" />
+                    <FaChevronUp className="w-5 h-5 text-gray-500 rotate-180 transition-all" />
                 ) : (
-                    <FaChevronUp className="w-5 h-5 ml-2 text-gray-500" />
+                    <FaChevronUp className="w-5 h-5 text-gray-500" />
                 )}
             </button>
 

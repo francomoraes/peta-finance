@@ -14,7 +14,7 @@ const AssetsSpreadsheet = () => {
     });
 
     const { classes, types } = useFetchClasses({
-        fetchUrl: `${import.meta.env.VITE_APP_API}/assetTypes`,
+        fetchUrl: `${import.meta.env.VITE_APP_API}/asset-types`,
         token
     });
 
