@@ -11,7 +11,8 @@ export const TableRow = ({
     editingField,
     handleEditChange,
     setEditingField,
-    totalWealth
+    totalWealth,
+    exchangeRate
 }: {
     item: (typeof mockData)[0];
     rowIndex: number;
@@ -20,10 +21,17 @@ export const TableRow = ({
     handleEditChange: (index: number, field: string, value: string) => void;
     setEditingField: React.Dispatch<React.SetStateAction<{ row: number; field: string } | null>>;
     totalWealth: number;
+    exchangeRate: any;
 }) => {
     const profit = calculateProfit(item);
 
-    const wealthPercentage = (item.asset_qty * item.current_price) / totalWealth;
+    const wealthPercentage = () => {
+        if (item.currency === 'USD') {
+            return (item.asset_qty * item.current_price * exchangeRate?.rates.BRL) / totalWealth;
+        } else {
+            return (item.asset_qty * item.current_price) / totalWealth;
+        }
+    };
 
     const handleEdit = (field: string) => {
         setEditingField({ row: rowIndex, field });
@@ -80,7 +88,7 @@ export const TableRow = ({
             <ProfitIndicator profit={profit.value} />
             <ProfitIndicator profit={profit.percentage} format="percent" />
             <StyledCell>
-                {wealthPercentage.toLocaleString('pt-br', {
+                {wealthPercentage().toLocaleString('pt-br', {
                     style: 'percent',
                     maximumFractionDigits: 2
                 })}

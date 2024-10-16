@@ -8,7 +8,7 @@ import useFetchClasses from './hooks/useFetchClasses';
 const AssetsSpreadsheet = () => {
     const token = import.meta.env.VITE_USER_TOKEN;
 
-    const { assets, totalWealth, isLoading, error } = useFetchAssets({
+    const { assets, totalWealth, isLoading, error, exchangeRate } = useFetchAssets({
         fetchUrl: `${import.meta.env.VITE_APP_API}/assets`,
         token
     });
@@ -31,6 +31,7 @@ const AssetsSpreadsheet = () => {
                 possibleAssetClasses={classes}
                 possibleAssetTypes={types}
                 headerTitles={headerTitles}
+                exchangeRate={exchangeRate}
             />
         </div>
     );

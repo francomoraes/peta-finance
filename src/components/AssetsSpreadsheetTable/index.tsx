@@ -11,13 +11,15 @@ const AssetsSpreadsheetTable = ({
     totalWealth,
     possibleAssetClasses,
     possibleAssetTypes,
-    headerTitles
+    headerTitles,
+    exchangeRate
 }: {
     assetsData: any[];
     totalWealth: number;
     possibleAssetClasses: string[];
     possibleAssetTypes: { [key: string]: string[] };
     headerTitles: string[];
+    exchangeRate: any;
 }) => {
     const [data, setData] = useState<any[]>([]);
     const [editData, setEditData] = useState<any[]>([]);
@@ -185,6 +187,7 @@ const AssetsSpreadsheetTable = ({
                         setEditingField={setEditingField}
                         setIsEditing={setIsEditing}
                         totalWealth={totalWealth}
+                        exchangeRate={exchangeRate}
                     />
                     <DeleteButton onClick={() => handleDeleteRow(rowIndex)} />
                 </div>
