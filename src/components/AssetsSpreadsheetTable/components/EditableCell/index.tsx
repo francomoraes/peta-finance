@@ -6,7 +6,8 @@ export const EditableCell = ({
     field,
     onEdit,
     onSave,
-    rowIndex
+    rowIndex,
+    currency
 }: {
     isEditing: boolean;
     value: number | string;
@@ -14,6 +15,7 @@ export const EditableCell = ({
     onEdit: () => void;
     onSave: (index: number, field: string, value: string) => void;
     rowIndex: number;
+    currency?: string;
 }) => {
     return isEditing ? (
         <input
@@ -26,7 +28,12 @@ export const EditableCell = ({
         />
     ) : (
         <div onClick={onEdit} className="flex items-center justify-center gap-1 cursor-pointer hover:text-blue-500">
-            {value}
+            {currency
+                ? value.toLocaleString('pt-br', {
+                      style: 'currency',
+                      currency
+                  })
+                : value}
             <FaPencilAlt width={10} height={10} />
         </div>
     );

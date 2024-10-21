@@ -5,6 +5,7 @@ import DeleteButton from '../DeleteButton';
 import { TableHeader } from './components/TableHeader';
 import { TableRow } from './components/TableRow';
 import { AddRowForm } from './components/AddRowForm';
+import fetchWithAuth from '@/utils/fetchWithAuth';
 
 const AssetsSpreadsheetTable = ({
     assetsData,
@@ -18,7 +19,10 @@ const AssetsSpreadsheetTable = ({
     totalWealth: number;
     possibleAssetClasses: string[];
     possibleAssetTypes: { [key: string]: string[] };
-    headerTitles: string[];
+    headerTitles: {
+        label: string;
+        width: string;
+    }[];
     exchangeRate: any;
 }) => {
     const [data, setData] = useState<any[]>([]);
@@ -32,6 +36,7 @@ const AssetsSpreadsheetTable = ({
         asset_class: 'Renda fixa',
         asset_type: '',
         asset_ticker: '',
+        market: '',
         asset_qty: 0,
         avg_price: 0,
         current_price: 0,
@@ -94,23 +99,8 @@ const AssetsSpreadsheetTable = ({
 
     const createAsset = async (newAsset: any) => {
         try {
-            const baseUrl = import.meta.env.VITE_APP_API;
-            const token = import.meta.env.VITE_USER_TOKEN;
+            const result = await fetchWithAuth('/assets', { method: 'POST', body: newAsset });
 
-            const response = await fetch(`${baseUrl}/assets`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`
-                },
-                body: JSON.stringify(newAsset)
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to create asset');
-            }
-
-            const result = await response.json();
             console.log('Asset created successfully', result);
 
             setEditData((prevData) => [...prevData, result]);
@@ -120,13 +110,13 @@ const AssetsSpreadsheetTable = ({
     };
 
     const addRow = () => {
-        console.log('formState', formState);
         setShowNewRowInputs(false);
         createAsset(formState);
         setFormState({
             asset_class: 'Renda fixa',
             asset_type: '',
             asset_ticker: '',
+            market: '',
             asset_qty: 0,
             avg_price: 0,
             current_price: 0,

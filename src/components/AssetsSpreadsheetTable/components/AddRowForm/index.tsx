@@ -60,6 +60,7 @@ export const AddRowForm = ({
                         options={possibleAssetClasses}
                         selected={formState.asset_class}
                         openModal={openModal}
+                        fieldKey="asset_class"
                     />
 
                     <FormDropdown
@@ -71,6 +72,16 @@ export const AddRowForm = ({
                         }
                         selected={formState.asset_type}
                         openModal={openModal}
+                        fieldKey="asset_type"
+                    />
+
+                    <FormDropdown
+                        label="Market"
+                        formState={formState}
+                        setFormState={setFormState}
+                        options={['B3', 'NYSE/NASDAQ', 'Crypto']}
+                        selected={formState.market}
+                        fieldKey="market"
                     />
 
                     <FormInput

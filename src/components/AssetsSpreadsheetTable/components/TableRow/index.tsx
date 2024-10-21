@@ -1,4 +1,4 @@
-import { mockData } from '../../fakeAssetSpreadsheetData';
+import { Asset } from '../../types';
 import { calculateProfit } from '../../utils/calculateProfit';
 import { EditableCell } from '../EditableCell';
 import { ProfitIndicator } from '../ProfitIndicator';
@@ -14,7 +14,7 @@ export const TableRow = ({
     totalWealth,
     exchangeRate
 }: {
-    item: (typeof mockData)[0];
+    item: Asset;
     rowIndex: number;
     setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
     editingField: { row: number; field: string } | null;
@@ -39,10 +39,14 @@ export const TableRow = ({
     };
 
     return (
-        <div className="grid grid-cols-12 gap-4 items-center bg-white rounded-md shadow-md p-1 pr-8 mb-2">
+        <div
+            className="grid gap-4 items-center bg-white rounded-md shadow-md p-1 pr-8 mb-2"
+            style={{ gridTemplateColumns: 'repeat(14, minmax(0, 1fr))' }} // Set up 13 columns
+        >
             <StyledCell>{item.asset_class}</StyledCell>
             <StyledCell>{item.asset_type}</StyledCell>
             <StyledCell>{item.asset_ticker}</StyledCell>
+            <StyledCell>{item.market}</StyledCell>
 
             <StyledCell>
                 <EditableCell
@@ -63,6 +67,7 @@ export const TableRow = ({
                     onEdit={() => handleEdit('avg_price')}
                     onSave={handleEditChange}
                     rowIndex={rowIndex}
+                    currency={item.currency}
                 />
             </StyledCell>
 
@@ -93,6 +98,7 @@ export const TableRow = ({
                     maximumFractionDigits: 2
                 })}
             </StyledCell>
+            <StyledCell>{item.custody}</StyledCell>
         </div>
     );
 };

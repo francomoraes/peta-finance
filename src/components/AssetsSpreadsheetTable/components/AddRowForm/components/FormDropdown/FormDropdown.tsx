@@ -8,7 +8,8 @@ const FormDropdown = ({
     setSelectedAssetClass,
     options,
     selected,
-    openModal
+    openModal,
+    fieldKey
 }: {
     label: string;
     formState: any;
@@ -16,7 +17,8 @@ const FormDropdown = ({
     setSelectedAssetClass?: any;
     options: string[];
     selected: string;
-    openModal: () => void;
+    openModal?: () => void;
+    fieldKey: string;
 }) => {
     return (
         <div className="w-full md:w-auto flex gap-2">
@@ -26,15 +28,15 @@ const FormDropdown = ({
                 selected={selected}
                 onSelect={(value: string) => {
                     if (value === 'create-new') {
-                        openModal();
+                        openModal && openModal();
                         return;
                     }
 
-                    if (setSelectedAssetClass) {
+                    if (setSelectedAssetClass && fieldKey === 'asset_class') {
                         setSelectedAssetClass(value);
                         setFormState({ ...formState, asset_class: value, asset_type: '' });
                     } else {
-                        setFormState({ ...formState, asset_type: value });
+                        setFormState({ ...formState, [fieldKey]: value });
                     }
                 }}
             />
@@ -42,7 +44,7 @@ const FormDropdown = ({
                 className="text-blue-600 hover:underline"
                 onClick={(e) => {
                     e.preventDefault();
-                    openModal();
+                    openModal && openModal();
                 }}
             >
                 <FaPlus className="inline-block" />
