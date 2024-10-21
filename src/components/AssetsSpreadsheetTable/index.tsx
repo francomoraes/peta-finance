@@ -1,11 +1,14 @@
 import ActionButton from '@/components/ActionButton';
 import ToggleButton from '@/components/ToggleButton';
-import { useEffect, useState } from 'react';
 import DeleteButton from '../DeleteButton';
 import { TableHeader } from './components/TableHeader';
 import { TableRow } from './components/TableRow';
 import { AddRowForm } from './components/AddRowForm';
-import fetchWithAuth from '@/utils/fetchWithAuth';
+import { sortData } from './utils/sorting';
+import { createAsset, deleteAsset, updateAssets } from './service/assetService';
+import { useState } from 'react';
+import { initialFormState } from './utils/initialFormState';
+import { focusOnElement } from './utils/domUtils';
 
 const AssetsSpreadsheetTable = ({
     assetsData,
@@ -25,30 +28,14 @@ const AssetsSpreadsheetTable = ({
     }[];
     exchangeRate: any;
 }) => {
-    const [data, setData] = useState<any[]>([]);
-    const [editData, setEditData] = useState<any[]>([]);
+    const [data, setData] = useState<any[]>(assetsData);
+    const [editData, setEditData] = useState<any[]>(assetsData);
     const [isEditing, setIsEditing] = useState(false);
     const [editingField, setEditingField] = useState<{ row: number; field: string } | null>(null);
     const [showNewRowInputs, setShowNewRowInputs] = useState(false);
     const [_selectedAssetClass, setSelectedAssetClass] = useState('');
 
-    const [formState, setFormState] = useState({
-        asset_class: 'Renda fixa',
-        asset_type: '',
-        asset_ticker: '',
-        market: '',
-        asset_qty: 0,
-        avg_price: 0,
-        current_price: 0,
-        currency: ''
-    });
-
-    useEffect(() => {
-        if (assetsData) {
-            setData(assetsData);
-            setEditData(assetsData);
-        }
-    }, [assetsData]);
+    const [formState, setFormState] = useState(initialFormState);
 
     const handleEditChange = (index: number, field: string, value: string) => {
         const updatedData = [...editData];
@@ -59,36 +46,12 @@ const AssetsSpreadsheetTable = ({
         setEditData(updatedData);
     };
 
-    const updateAssets = async (updatedAssets: any[]) => {
-        try {
-            const baseUrl = import.meta.env.VITE_APP_API;
-            const token = import.meta.env.VITE_USER_TOKEN;
-
-            const response = await fetch(`${baseUrl}/assets`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`
-                },
-                body: JSON.stringify(updatedAssets)
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to update assets');
-            }
-
-            const result = await response.json();
-            console.log('Assets updated successfully', result);
-        } catch (error: any) {
-            console.error('Error updating assets', error);
-        }
-    };
-
     const handleSave = () => {
-        setData(editData);
-        setIsEditing(false);
-        setEditingField(null);
-        updateAssets(editData);
+        updateAssets(editData).then(() => {
+            setData(editData);
+            setIsEditing(false);
+            setEditingField(null);
+        });
     };
 
     const handleCancel = () => {
@@ -97,70 +60,32 @@ const AssetsSpreadsheetTable = ({
         setEditingField(null);
     };
 
-    const createAsset = async (newAsset: any) => {
-        try {
-            const result = await fetchWithAuth('/assets', { method: 'POST', body: newAsset });
-
-            console.log('Asset created successfully', result);
-
-            setEditData((prevData) => [...prevData, result]);
-        } catch (error: any) {
-            console.error('Error creating asset', error);
+    const handleDeleteRow = (index: number) => {
+        if (window.confirm('Are you sure you want to delete this row?')) {
+            deleteAsset(editData[index].id)
+                .then(() => {
+                    setEditData(editData.filter((_, i) => i !== index));
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
         }
+    };
+
+    const handleSort = (field: string) => {
+        const sortedData = sortData(editData, field);
+        setEditData(sortedData);
     };
 
     const addRow = () => {
         setShowNewRowInputs(false);
-        createAsset(formState);
-        setFormState({
-            asset_class: 'Renda fixa',
-            asset_type: '',
-            asset_ticker: '',
-            market: '',
-            asset_qty: 0,
-            avg_price: 0,
-            current_price: 0,
-            currency: ''
-        });
-    };
-
-    const deleteAsset = async (assetId: string) => {
-        try {
-            const baseUrl = import.meta.env.VITE_APP_API;
-            const token = import.meta.env.VITE_USER_TOKEN;
-
-            const response = await fetch(`${baseUrl}/assets/${assetId}`, {
-                method: 'DELETE',
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
+        createAsset(formState)
+            .then((newAsset) => {
+                setEditData((prevData) => [...prevData, newAsset]);
+            })
+            .catch((error) => {
+                console.error(error);
             });
-
-            if (!response.ok) {
-                throw new Error('Failed to delete asset');
-            }
-
-            const result = await response.json();
-            console.log('Asset deleted successfully', result);
-        } catch (error: any) {
-            console.error('Error deleting asset', error);
-        }
-    };
-
-    const handleDeleteRow = (index: number) => {
-        window.confirm('Are you sure you want to delete this row?') &&
-            deleteAsset(editData[index].id).then(() => {
-                setEditData(editData.filter((_, i) => i !== index));
-            });
-    };
-
-    const handleSort = (field: string) => {
-        const sortedData = [...editData].sort((a, b) => {
-            if (a[field] < b[field]) return -1;
-            if (a[field] > b[field]) return 1;
-            return 0;
-        });
-        setEditData(sortedData);
     };
 
     return (
@@ -187,7 +112,7 @@ const AssetsSpreadsheetTable = ({
                 isToggled={showNewRowInputs}
                 onClick={() => {
                     setShowNewRowInputs(!showNewRowInputs);
-                    setTimeout(() => document.getElementById('class-input')?.focus(), 100);
+                    if (!showNewRowInputs) focusOnElement('class-input');
                 }}
             />
             <AddRowForm
