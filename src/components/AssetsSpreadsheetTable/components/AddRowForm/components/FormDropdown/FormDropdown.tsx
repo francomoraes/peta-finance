@@ -40,15 +40,17 @@ const FormDropdown = ({
                     }
                 }}
             />
-            <button
-                className="text-blue-600 hover:underline"
-                onClick={(e) => {
-                    e.preventDefault();
-                    openModal && openModal();
-                }}
-            >
-                <FaPlus className="inline-block" />
-            </button>
+            {openModal && (
+                <button
+                    className="text-blue-600 hover:underline"
+                    onClick={(e) => {
+                        e.preventDefault();
+                        openModal();
+                    }}
+                >
+                    <FaPlus className="inline-block" />
+                </button>
+            )}
         </div>
     );
 };

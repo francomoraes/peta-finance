@@ -1,28 +1,48 @@
 {
-    "menuItems": [
-        {
-            "label": "Home",
-            "path": "/"
-        },
-        {
-            "label": "Asset Alocation",
-            "path": "/asset-alocation"
-        },
-        {
-            "label": "Asset Detail",
-            "path": "/asset-detail"
-        },
-        {
-            "label": "Assets Spreadsheet",
-            "path": "/assets-spreadsheet"
-        },
-        {
-            "label": "Wealth Evolution",
-            "path": "/wealth-evolution"
-        },
-        {
-            "label": "About",
-            "path": "/about"
-        }
-    ]
+    "menuItems": {
+        "authenticated": [
+            {
+                "label": "Home",
+                "path": "/"
+            },
+            {
+                "label": "Asset Alocation",
+                "path": "/asset-alocation"
+            },
+            {
+                "label": "Asset Detail",
+                "path": "/asset-detail"
+            },
+            {
+                "label": "Assets Spreadsheet",
+                "path": "/assets-spreadsheet"
+            },
+            {
+                "label": "Wealth Evolution",
+                "path": "/wealth-evolution"
+            },
+            {
+                "label": "About",
+                "path": "/about"
+            }
+        ],
+        "unauthenticated": [
+            {
+                "label": "Home",
+                "path": "/"
+            },
+            {
+                "label": "Login",
+                "path": "/login"
+            },
+            {
+                "label": "Register",
+                "path": "/register"
+            },
+            {
+                "label": "About",
+                "path": "/about"
+            }
+        ]
+    }
 }

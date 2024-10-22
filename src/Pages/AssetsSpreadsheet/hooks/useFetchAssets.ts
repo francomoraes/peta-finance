@@ -1,7 +1,7 @@
 import { Asset } from '@/components/AssetsSpreadsheetTable/types';
 import { useEffect, useState } from 'react';
 
-const useFetchAssets = ({ fetchUrl, token }: { fetchUrl: string; token: string }) => {
+const useFetchAssets = ({ fetchUrl, token }: { fetchUrl: string; token?: string }) => {
     const [assets, setAssets] = useState<Asset[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
@@ -10,6 +10,11 @@ const useFetchAssets = ({ fetchUrl, token }: { fetchUrl: string; token: string }
 
     useEffect(() => {
         const fetchAssets = async () => {
+            if (!token) {
+                console.warn('No token provided');
+                return;
+            }
+
             try {
                 const response = await fetch(fetchUrl, {
                     headers: {

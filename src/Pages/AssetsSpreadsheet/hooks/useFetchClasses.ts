@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-const useFetchClasses = ({ fetchUrl, token }: { fetchUrl: string; token: string }) => {
+const useFetchClasses = ({ fetchUrl, token }: { fetchUrl: string; token?: string }) => {
     const [classes, setClasses] = useState<string[]>([]);
     const [types, setTypes] = useState<{ [key: string]: string[] }>({});
     const [isLoading, setIsLoading] = useState(true);

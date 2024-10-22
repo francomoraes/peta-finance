@@ -4,18 +4,19 @@ import { headerTitles } from '@/components/AssetsSpreadsheetTable/fakeAssetSprea
 import ErrorMessage from '@/components/ErrorMessage';
 import SpinnerLoader from '@/components/SpinnerLoader';
 import useFetchClasses from './hooks/useFetchClasses';
+import { useAuth } from '@/hooks/useAuth';
 
 const AssetsSpreadsheet = () => {
-    const token = import.meta.env.VITE_USER_TOKEN;
+    const { user } = useAuth();
 
     const { assets, totalWealth, isLoading, error, exchangeRate } = useFetchAssets({
         fetchUrl: `${import.meta.env.VITE_APP_API}/assets`,
-        token
+        token: user?.token ? user.token : undefined
     });
 
     const { classes, types } = useFetchClasses({
         fetchUrl: `${import.meta.env.VITE_APP_API}/asset-types`,
-        token
+        token: user?.token ? user.token : undefined
     });
 
     if (isLoading) return <SpinnerLoader />;
