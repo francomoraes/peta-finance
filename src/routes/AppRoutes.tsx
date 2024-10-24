@@ -19,14 +19,12 @@ const AppRoutes = () => {
                       switch (item.path) {
                           case '/':
                               return <Route key={item.path} path={item.path} element={<Home />} />;
-                          case '/login':
-                              return <Route key={item.path} path={item.path} element={<Login />} />;
+                          case '/assets-spreadsheet':
+                              return <Route key={item.path} path={item.path} element={<AssetsSpreadsheet />} />;
                           case '/asset-alocation':
                               return <Route key={item.path} path={item.path} element={<AssetAlocation />} />;
                           case '/asset-detail':
                               return <Route key={item.path} path={item.path} element={<AssetDetail />} />;
-                          case '/assets-spreadsheet':
-                              return <Route key={item.path} path={item.path} element={<AssetsSpreadsheet />} />;
                           case '/wealth-evolution':
                               return <Route key={item.path} path={item.path} element={<WealthEvolution />} />;
                           case '/about':

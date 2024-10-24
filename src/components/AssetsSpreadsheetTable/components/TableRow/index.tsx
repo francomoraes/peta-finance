@@ -12,7 +12,8 @@ export const TableRow = ({
     handleEditChange,
     setEditingField,
     totalWealth,
-    exchangeRate
+    exchangeRate,
+    visibleColumns
 }: {
     item: Asset;
     rowIndex: number;
@@ -22,6 +23,7 @@ export const TableRow = ({
     setEditingField: React.Dispatch<React.SetStateAction<{ row: number; field: string } | null>>;
     totalWealth: number;
     exchangeRate: any;
+    visibleColumns: string[];
 }) => {
     const profit = calculateProfit(item);
 
@@ -41,64 +43,82 @@ export const TableRow = ({
     return (
         <div
             className="grid gap-4 items-center bg-white rounded-md shadow-md p-1 pr-8 mb-2"
-            style={{ gridTemplateColumns: 'repeat(14, minmax(0, 1fr))' }} // Set up 13 columns
+            style={{ gridTemplateColumns: `repeat(${visibleColumns.length || 13}, minmax(0, 1fr))` }}
         >
-            <StyledCell>{item.asset_class}</StyledCell>
-            <StyledCell>{item.asset_type}</StyledCell>
-            <StyledCell>{item.asset_ticker}</StyledCell>
-            <StyledCell>{item.market}</StyledCell>
+            {visibleColumns.includes('Classe') && <StyledCell>{item.asset_class}</StyledCell>}
+            {visibleColumns.includes('Tipo') && <StyledCell>{item.asset_type}</StyledCell>}
+            {visibleColumns.includes('Ticker') && <StyledCell>{item.asset_ticker}</StyledCell>}
+            {visibleColumns.includes('Mercado') && <StyledCell>{item.market}</StyledCell>}
 
-            <StyledCell>
-                <EditableCell
-                    isEditing={editingField?.row === rowIndex && editingField?.field === 'asset_qty'}
-                    value={item.asset_qty}
-                    field="asset_qty"
-                    onEdit={() => handleEdit('asset_qty')}
-                    onSave={handleEditChange}
-                    rowIndex={rowIndex}
-                />
-            </StyledCell>
+            {visibleColumns.includes('QTD') && (
+                <StyledCell>
+                    <EditableCell
+                        isEditing={editingField?.row === rowIndex && editingField?.field === 'asset_qty'}
+                        value={item.asset_qty}
+                        field="asset_qty"
+                        onEdit={() => handleEdit('asset_qty')}
+                        onSave={handleEditChange}
+                        rowIndex={rowIndex}
+                    />
+                </StyledCell>
+            )}
+            {visibleColumns.includes('Preço Médio') && (
+                <StyledCell>
+                    <EditableCell
+                        isEditing={editingField?.row === rowIndex && editingField?.field === 'avg_price'}
+                        value={item.avg_price}
+                        field="avg_price"
+                        onEdit={() => handleEdit('avg_price')}
+                        onSave={handleEditChange}
+                        rowIndex={rowIndex}
+                        currency={item.currency}
+                    />
+                </StyledCell>
+            )}
 
-            <StyledCell>
-                <EditableCell
-                    isEditing={editingField?.row === rowIndex && editingField?.field === 'avg_price'}
-                    value={item.avg_price}
-                    field="avg_price"
-                    onEdit={() => handleEdit('avg_price')}
-                    onSave={handleEditChange}
-                    rowIndex={rowIndex}
-                    currency={item.currency}
-                />
-            </StyledCell>
+            {visibleColumns.includes('Preço Atual') && (
+                <StyledCell>
+                    {item.current_price.toLocaleString('pt-br', {
+                        style: 'currency',
+                        currency: item.currency
+                    })}
+                </StyledCell>
+            )}
 
-            <StyledCell>
-                {item.current_price.toLocaleString('pt-br', {
-                    style: 'currency',
-                    currency: item.currency
-                })}
-            </StyledCell>
-            <StyledCell>{item.currency}</StyledCell>
-            <StyledCell>
-                {(item.asset_qty * item.avg_price).toLocaleString('pt-br', {
-                    style: 'currency',
-                    currency: item.currency
-                })}
-            </StyledCell>
-            <StyledCell>
-                {(item.asset_qty * item.current_price).toLocaleString('pt-br', {
-                    style: 'currency',
-                    currency: item.currency
-                })}
-            </StyledCell>
-            <ProfitIndicator profit={profit.value} />
-            <ProfitIndicator profit={profit.percentage} format="percent" />
-            <StyledCell>
-                {wealthPercentage().toLocaleString('pt-br', {
-                    style: 'percent',
-                    maximumFractionDigits: 2
-                })}
-            </StyledCell>
-            <StyledCell>{item.custody}</StyledCell>
+            {visibleColumns.includes('Moeda') && <StyledCell>{item.currency}</StyledCell>}
+
+            {visibleColumns.includes('Valor Investido') && (
+                <StyledCell>
+                    {(item.asset_qty * item.avg_price).toLocaleString('pt-br', {
+                        style: 'currency',
+                        currency: item.currency
+                    })}
+                </StyledCell>
+            )}
+
+            {visibleColumns.includes('Valor Atual') && (
+                <StyledCell>
+                    {(item.asset_qty * item.current_price).toLocaleString('pt-br', {
+                        style: 'currency',
+                        currency: item.currency
+                    })}
+                </StyledCell>
+            )}
+
+            {visibleColumns.includes('Lucro') && <ProfitIndicator profit={profit.value} />}
+
+            {visibleColumns.includes('Lucro (%)') && <ProfitIndicator profit={profit.percentage} format="percent" />}
+
+            {visibleColumns.includes('% Carteira') && (
+                <StyledCell>
+                    {wealthPercentage().toLocaleString('pt-br', {
+                        style: 'percent',
+                        maximumFractionDigits: 2
+                    })}
+                </StyledCell>
+            )}
+
+            {visibleColumns.includes('Custódia') && <StyledCell>{item.custody}</StyledCell>}
         </div>
     );
 };

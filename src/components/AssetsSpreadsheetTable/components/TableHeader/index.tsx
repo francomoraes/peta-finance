@@ -12,7 +12,7 @@ export const TableHeader = ({
 }) => (
     <div
         className="grid gap-4 bg-gray-200 rounded-md p-4 pr-8 py-1 mb-2 shadow-md"
-        style={{ gridTemplateColumns: 'repeat(14, minmax(0, 1fr))' }} // Set up 13 columns
+        style={{ gridTemplateColumns: `repeat(${headers.length || 13}, minmax(0, 1fr))` }} // Set up 13 columns
     >
         {headers.map((item, index) => {
             return (

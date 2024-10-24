@@ -6,16 +6,16 @@
                 "path": "/"
             },
             {
+                "label": "Assets Spreadsheet",
+                "path": "/assets-spreadsheet"
+            },
+            {
                 "label": "Asset Alocation",
                 "path": "/asset-alocation"
             },
             {
                 "label": "Asset Detail",
                 "path": "/asset-detail"
-            },
-            {
-                "label": "Assets Spreadsheet",
-                "path": "/assets-spreadsheet"
             },
             {
                 "label": "Wealth Evolution",

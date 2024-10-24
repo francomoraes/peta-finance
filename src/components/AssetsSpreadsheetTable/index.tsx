@@ -6,9 +6,10 @@ import { TableRow } from './components/TableRow';
 import { AddRowForm } from './components/AddRowForm';
 import { sortData } from './utils/sorting';
 import { createAsset, deleteAsset, updateAssets } from './service/assetService';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { initialFormState } from './utils/initialFormState';
 import { focusOnElement } from './utils/domUtils';
+import { FaGear } from 'react-icons/fa6';
 
 const AssetsSpreadsheetTable = ({
     assetsData,
@@ -34,8 +35,22 @@ const AssetsSpreadsheetTable = ({
     const [editingField, setEditingField] = useState<{ row: number; field: string } | null>(null);
     const [showNewRowInputs, setShowNewRowInputs] = useState(false);
     const [_selectedAssetClass, setSelectedAssetClass] = useState('');
+    const [visibleColumns, setVisibleColumns] = useState<string[]>(headerTitles.map((header) => header.label));
+    const [showSettings, setShowSettings] = useState(false);
 
     const [formState, setFormState] = useState(initialFormState);
+
+    useEffect(() => {
+        const storedVisibleColumns = localStorage.getItem('visibleColumns');
+        console.log('storedVisibleColumns', storedVisibleColumns);
+        if (storedVisibleColumns) {
+            setVisibleColumns(JSON.parse(storedVisibleColumns));
+        }
+    }, []);
+
+    useEffect(() => {
+        localStorage.setItem('visibleColumns', JSON.stringify(visibleColumns));
+    }, [visibleColumns]);
 
     const handleEditChange = (index: number, field: string, value: string) => {
         const updatedData = [...editData];
@@ -88,9 +103,44 @@ const AssetsSpreadsheetTable = ({
             });
     };
 
+    const handleToggleColumn = (columnLabel: string) => {
+        setVisibleColumns((prev) =>
+            prev.includes(columnLabel) ? prev.filter((col) => col !== columnLabel) : [...prev, columnLabel]
+        );
+    };
+
+    const handleShowSettings = () => {
+        setShowSettings(!showSettings);
+    };
+
     return (
-        <div className="table-container">
-            <TableHeader headers={headerTitles} handleSort={handleSort} />
+        <div className="table-container relative">
+            <div className="absolute left-40 -top-10">
+                <button onClick={handleShowSettings}>
+                    <FaGear />
+                </button>
+                <div
+                    className={`settings-container ${
+                        showSettings ? 'visible' : 'hidden'
+                    } flex flex-col gap-2 justify-start absolute top-0 left-6 bg-white p-4 rounded-lg shadow-lg z-10 max-h-[360px] overflow-y-auto`}
+                >
+                    {headerTitles.map((header) => (
+                        <label key={header.label} className="flex gap-2">
+                            <input
+                                type="checkbox"
+                                checked={visibleColumns.includes(header.label)}
+                                onChange={() => handleToggleColumn(header.label)}
+                            />
+                            {header.label}
+                        </label>
+                    ))}
+                </div>
+            </div>
+
+            <TableHeader
+                headers={headerTitles.filter((header) => visibleColumns.includes(header.label))}
+                handleSort={handleSort}
+            />
 
             {editData?.map((item, rowIndex) => (
                 <div className="relative" key={rowIndex}>
@@ -103,6 +153,7 @@ const AssetsSpreadsheetTable = ({
                         setIsEditing={setIsEditing}
                         totalWealth={totalWealth}
                         exchangeRate={exchangeRate}
+                        visibleColumns={visibleColumns}
                     />
                     <DeleteButton onClick={() => handleDeleteRow(rowIndex)} />
                 </div>
